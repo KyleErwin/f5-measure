@@ -47,17 +47,23 @@ def f5_complexity(df, target_feature="target"):
 
     while len(features) and len(df):
         # md is shorthand here for most discriminative
+        md_score = 0.0
         md_feature = None
         md_indices = []
 
+        target_counts = dict(df[target_feature].value_counts())
+
         for feature in features:
             sequences = longest_sequences(df, feature, target_feature)
+            score = 0.0
             indices = []
 
-            for _, xs in sequences.items():
+            for target, xs in sequences.items():
+                score += len(xs) / target_counts[target]
                 indices = indices + xs
 
-            if  len(indices) > len(md_indices):
+            if score > md_score:
+                md_score = score
                 md_feature = feature
                 md_indices = indices
         features.remove(md_feature)
